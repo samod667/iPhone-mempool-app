@@ -5,24 +5,13 @@
 //  Created by Dor Sam on 04/03/2025.
 //
 
-import Foundation
-//
-//  SettingsView.swift
-//  BitcoinMempool
-//
-//  Created by Dor Sam on 04/03/2025.
-//
-
 import SwiftUI
+import UserNotifications
 
+// ViewModel for Settings
 class SettingsViewModel: ObservableObject {
     // Network settings
     @Published var selectedNetwork: BitcoinNetwork = .mainnet
-    
-    // Display settings
-    @Published var bitcoinUnit: BitcoinUnit = .btc
-    @Published var feeRateUnit: FeeRateUnit = .satVbyte
-    @Published var use24HourTime: Bool = true
     
     // API settings
     @Published var apiEndpoint: String = "https://mempool.space/api"
@@ -44,9 +33,6 @@ class SettingsViewModel: ObservableObject {
     func saveSettings() {
         let defaults = UserDefaults.standard
         defaults.set(selectedNetwork.rawValue, forKey: "selectedNetwork")
-        defaults.set(bitcoinUnit.rawValue, forKey: "bitcoinUnit")
-        defaults.set(feeRateUnit.rawValue, forKey: "feeRateUnit")
-        defaults.set(use24HourTime, forKey: "use24HourTime")
         defaults.set(apiEndpoint, forKey: "apiEndpoint")
         defaults.set(useCustomEndpoint, forKey: "useCustomEndpoint")
         defaults.set(autoRefreshInterval, forKey: "autoRefreshInterval")
@@ -62,18 +48,6 @@ class SettingsViewModel: ObservableObject {
            let network = BitcoinNetwork(rawValue: networkValue) {
             selectedNetwork = network
         }
-        
-        if let unitValue = defaults.string(forKey: "bitcoinUnit"),
-           let unit = BitcoinUnit(rawValue: unitValue) {
-            bitcoinUnit = unit
-        }
-        
-        if let feeUnitValue = defaults.string(forKey: "feeRateUnit"),
-           let feeUnit = FeeRateUnit(rawValue: feeUnitValue) {
-            feeRateUnit = feeUnit
-        }
-        
-        use24HourTime = defaults.bool(forKey: "use24HourTime")
         
         if let endpoint = defaults.string(forKey: "apiEndpoint") {
             apiEndpoint = endpoint
@@ -95,9 +69,6 @@ class SettingsViewModel: ObservableObject {
     // Reset settings to defaults
     func resetSettings() {
         selectedNetwork = .mainnet
-        bitcoinUnit = .btc
-        feeRateUnit = .satVbyte
-        use24HourTime = true
         apiEndpoint = "https://mempool.space/api"
         useCustomEndpoint = false
         autoRefreshInterval = 60
@@ -107,61 +78,12 @@ class SettingsViewModel: ObservableObject {
     }
 }
 
-// Enums for settings options
-enum BitcoinNetwork: String, CaseIterable, Identifiable {
-    case mainnet = "Mainnet"
-    case testnet = "Testnet"
-    case signet = "Signet"
-    
-    var id: String { self.rawValue }
-    
-    var endpoint: String {
-        switch self {
-        case .mainnet: return "https://mempool.space/api"
-        case .testnet: return "https://mempool.space/testnet/api"
-        case .signet: return "https://mempool.space/signet/api"
-        }
-    }
-}
-
-enum BitcoinUnit: String, CaseIterable, Identifiable {
-    case btc = "BTC"
-    case sats = "Satoshis"
-    
-    var id: String { self.rawValue }
-    
-    func format(_ value: Double) -> String {
-        switch self {
-        case .btc:
-            return String(format: "%.8f BTC", value)
-        case .sats:
-            return "\(Int(value * 100_000_000)) sats"
-        }
-    }
-}
-
-enum FeeRateUnit: String, CaseIterable, Identifiable {
-    case satVbyte = "sat/vB"
-    case btcKb = "BTC/kB"
-    
-    var id: String { self.rawValue }
-    
-    func format(_ satPerVbyte: Double) -> String {
-        switch self {
-        case .satVbyte:
-            return String(format: "%.2f sat/vB", satPerVbyte)
-        case .btcKb:
-            // Convert sat/vB to BTC/kB (1 kB = 1000 vBytes, 1 BTC = 100,000,000 sats)
-            let btcPerKb = satPerVbyte * 1000 / 100_000_000
-            return String(format: "%.8f BTC/kB", btcPerKb)
-        }
-    }
-}
-
 struct SettingsView: View {
     @StateObject private var viewModel = SettingsViewModel()
     @State private var showingResetConfirmation = false
     @State private var showingCacheCleared = false
+    @State private var showingNotificationPermissionAlert = false
+    @State private var notificationPermissionStatus = false
     
     var body: some View {
         NavigationView {
@@ -174,43 +96,36 @@ struct SettingsView: View {
                         }
                     }
                     .onChange(of: viewModel.selectedNetwork) { _ in
+                        // Update API endpoint when network changes
                         if !viewModel.useCustomEndpoint {
                             viewModel.apiEndpoint = viewModel.selectedNetwork.endpoint
+                            // Update the API client's base URL
+                            MempoolAPIClient.shared.updateBaseURL(to: viewModel.apiEndpoint)
                         }
                         viewModel.saveSettings()
                     }
                 }
                 
-                // Display settings section
-                Section(header: Text("Display")) {
-                    Picker("Bitcoin Unit", selection: $viewModel.bitcoinUnit) {
-                        ForEach(BitcoinUnit.allCases) { unit in
-                            Text(unit.rawValue).tag(unit)
-                        }
-                    }
-                    .onChange(of: viewModel.bitcoinUnit) { _ in viewModel.saveSettings() }
-                    
-                    Picker("Fee Rate Display", selection: $viewModel.feeRateUnit) {
-                        ForEach(FeeRateUnit.allCases) { unit in
-                            Text(unit.rawValue).tag(unit)
-                        }
-                    }
-                    .onChange(of: viewModel.feeRateUnit) { _ in viewModel.saveSettings() }
-                    
-                    Toggle("Use 24-Hour Time", isOn: $viewModel.use24HourTime)
-                        .onChange(of: viewModel.use24HourTime) { _ in viewModel.saveSettings() }
-                }
-                
                 // API settings section
                 Section(header: Text("API Configuration")) {
                     Toggle("Use Custom API Endpoint", isOn: $viewModel.useCustomEndpoint)
-                        .onChange(of: viewModel.useCustomEndpoint) { _ in viewModel.saveSettings() }
+                        .onChange(of: viewModel.useCustomEndpoint) { newValue in
+                            if !newValue {
+                                // If custom endpoint is disabled, revert to network endpoint
+                                viewModel.apiEndpoint = viewModel.selectedNetwork.endpoint
+                                MempoolAPIClient.shared.updateBaseURL(to: viewModel.apiEndpoint)
+                            }
+                            viewModel.saveSettings()
+                        }
                     
                     if viewModel.useCustomEndpoint {
                         TextField("API Endpoint", text: $viewModel.apiEndpoint)
                             .autocapitalization(.none)
                             .disableAutocorrection(true)
-                            .onChange(of: viewModel.apiEndpoint) { _ in viewModel.saveSettings() }
+                            .onChange(of: viewModel.apiEndpoint) { newValue in
+                                MempoolAPIClient.shared.updateBaseURL(to: newValue)
+                                viewModel.saveSettings()
+                            }
                     }
                 }
                 
@@ -223,10 +138,28 @@ struct SettingsView: View {
                         Text("5 minutes").tag(300)
                         Text("10 minutes").tag(600)
                     }
-                    .onChange(of: viewModel.autoRefreshInterval) { _ in viewModel.saveSettings() }
+                    .onChange(of: viewModel.autoRefreshInterval) { newValue in
+                        viewModel.saveSettings()
+                        // Notify RefreshManager to update its timer
+                        NotificationCenter.default.post(name: UserDefaults.didChangeNotification, object: nil)
+                        
+                        if newValue > 0 {
+                            // Trigger immediate refresh
+                            Task {
+                                RefreshManager.shared.refreshAll()
+                            }
+                        }
+                    }
                     
                     Toggle("Enable Notifications", isOn: $viewModel.enablePushNotifications)
-                        .onChange(of: viewModel.enablePushNotifications) { _ in viewModel.saveSettings() }
+                        .onChange(of: viewModel.enablePushNotifications) { newValue in
+                            viewModel.saveSettings()
+                            
+                            if newValue {
+                                // If enabling notifications, request permission
+                                checkAndRequestNotificationPermissions()
+                            }
+                        }
                 }
                 
                 // Cache settings section
@@ -238,14 +171,31 @@ struct SettingsView: View {
                         Text("1 hour").tag(60)
                         Text("4 hours").tag(240)
                     }
-                    .onChange(of: viewModel.cacheDuration) { _ in viewModel.saveSettings() }
+                    .onChange(of: viewModel.cacheDuration) { _ in
+                        viewModel.saveSettings()
+                    }
                     
                     Button(action: {
                         // Clear cache
+                        CacheManager.shared.clearCache()
                         showingCacheCleared = true
                     }) {
                         Text("Clear Cache")
                             .foregroundColor(.red)
+                    }
+                }
+                
+                // Testing section for demo purposes
+                Section(header: Text("Test Features")) {
+                    Button("Test Auto Refresh") {
+                        RefreshManager.shared.refreshAll()
+                    }
+                    
+                    Button("Test Notification") {
+                        NotificationsManager.shared.sendNotification(
+                            title: "Test Notification",
+                            body: "This is a test notification from Bitcoin Mempool app"
+                        )
                     }
                 }
                 
@@ -292,6 +242,10 @@ struct SettingsView: View {
                 Button("Cancel", role: .cancel) { }
                 Button("Reset", role: .destructive) {
                     viewModel.resetSettings()
+                    // Update API client when settings are reset
+                    MempoolAPIClient.shared.updateBaseURL(to: viewModel.apiEndpoint)
+                    // Notify RefreshManager to update timer
+                    NotificationCenter.default.post(name: UserDefaults.didChangeNotification, object: nil)
                 }
             } message: {
                 Text("This will reset all settings to their default values. This action cannot be undone.")
@@ -299,9 +253,53 @@ struct SettingsView: View {
             .alert("Cache Cleared", isPresented: $showingCacheCleared) {
                 Button("OK", role: .cancel) { }
             } message: {
-                Text("The app cache has been cleared.")
+                Text("The app cache has been cleared. This will force fresh data to be loaded from the network.")
+            }
+            .alert("Notification Permission", isPresented: $showingNotificationPermissionAlert) {
+                Button("Settings", action: {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url)
+                    }
+                })
+                Button("OK", role: .cancel) { }
+            } message: {
+                if notificationPermissionStatus {
+                    Text("Notifications are enabled. You'll receive updates for new blocks and significant mempool events.")
+                } else {
+                    Text("Notifications are disabled. Please go to Settings to enable them for Bitcoin Mempool.")
+                }
+            }
+            .onAppear {
+                // Check notification status when view appears
+                checkNotificationStatus()
             }
         }
         .preferredColorScheme(.dark)
+    }
+    
+    // Check and request notification permissions if necessary
+    private func checkAndRequestNotificationPermissions() {
+        NotificationsManager.shared.checkNotificationStatus { authorized in
+            if !authorized {
+                // Request permissions
+                NotificationsManager.shared.requestPermissions()
+            }
+            
+            // Show the appropriate alert based on current status
+            self.notificationPermissionStatus = authorized
+            self.showingNotificationPermissionAlert = true
+        }
+    }
+    
+    // Check notification status and update toggle if necessary
+    private func checkNotificationStatus() {
+        NotificationsManager.shared.checkNotificationStatus { authorized in
+            if viewModel.enablePushNotifications && !authorized {
+                // Update UI if permissions were revoked
+                DispatchQueue.main.async {
+                    self.notificationPermissionStatus = authorized
+                }
+            }
+        }
     }
 }

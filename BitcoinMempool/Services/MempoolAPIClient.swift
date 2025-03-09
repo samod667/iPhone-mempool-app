@@ -1,7 +1,25 @@
 import Foundation
 
+// Define BitcoinNetwork here if it's not imported from elsewhere
+enum BitcoinNetwork: String, CaseIterable, Identifiable {
+    case mainnet = "Mainnet"
+    case testnet = "Testnet"
+    case signet = "Signet"
+    
+    var id: String { self.rawValue }
+    
+    var endpoint: String {
+        switch self {
+        case .mainnet: return "https://mempool.space/api"
+        case .testnet: return "https://mempool.space/testnet/api"
+        case .signet: return "https://mempool.space/signet/api"
+        }
+    }
+}
+
 class MempoolAPIClient {
-    internal let baseURL = "https://mempool.space/api"
+    // Changed from let to var to allow updating
+    private var baseURL = "https://mempool.space/api"
     internal let session: URLSession
     
     // Bitcoin price tracking
@@ -25,8 +43,31 @@ class MempoolAPIClient {
         
         self.session = URLSession(configuration: configuration)
         
+        // Check for saved endpoint in UserDefaults
+        if let savedEndpoint = UserDefaults.standard.string(forKey: "apiEndpoint"),
+           !savedEndpoint.isEmpty {
+            self.baseURL = savedEndpoint
+            print("Using saved API endpoint: \(savedEndpoint)")
+        }
+        
+        // Check for network setting
+        if let networkValue = UserDefaults.standard.string(forKey: "selectedNetwork"),
+           let network = BitcoinNetwork(rawValue: networkValue),
+           !UserDefaults.standard.bool(forKey: "useCustomEndpoint") {
+            self.baseURL = network.endpoint
+            print("Using network endpoint: \(network.endpoint)")
+        }
+        
         // Fetch initial bitcoin price
         refreshBitcoinPrice()
+    }
+    
+    // New method to update the base URL
+    func updateBaseURL(to newURL: String) {
+        guard !newURL.isEmpty else { return }
+        
+        print("Updating API base URL to: \(newURL)")
+        self.baseURL = newURL
     }
     
     // Fetch the current Bitcoin price
@@ -59,6 +100,132 @@ class MempoolAPIClient {
     func refreshBitcoinPrice() {
         Task {
             await fetchBitcoinPrice()
+        }
+    }
+    
+    // MARK: - Caching Support
+    
+    // Add a method to fetch data with caching
+    func fetchDataWithCache(from endpoint: String) async throws -> Data {
+        // Create a unique cache key based on the endpoint
+        let cacheKey = endpoint.replacingOccurrences(of: "/", with: "_")
+        
+        // Check if we have valid cached data
+        if let cachedData = CacheManager.shared.loadFromCache(for: cacheKey) {
+            print("Using cached data for: \(endpoint)")
+            return cachedData
+        }
+        
+        // If no cache, fetch the data normally
+        let (data, _) = try await fetchData(from: endpoint)
+        
+        // Cache the response
+        CacheManager.shared.saveToCache(data: data, for: cacheKey)
+        
+        return data
+    }
+    
+    // Fetch mempool stats with caching
+    func fetchMempoolStatsWithCache() async throws -> MempoolStats {
+        let endpoint = "/mempool"
+        
+        do {
+            let data = try await fetchDataWithCache(from: endpoint)
+            
+            let decoder = JSONDecoder()
+            let stats = try decoder.decode(MempoolStats.self, from: data)
+            print("Successfully decoded MempoolStats: \(stats)")
+            
+            // Check if we should send a notification about mempool congestion
+            let threshold = 15000 // Arbitrary threshold for demonstration
+            if stats.mempoolSize > threshold && NotificationsManager.shared.areNotificationsEnabled {
+                // Calculate average fee rate
+                let avgFeeRate = Double(stats.totalFeeInSatoshis) / Double(stats.vsize)
+                
+                // Send a notification
+                NotificationsManager.shared.notifyMempoolCongestion(
+                    txCount: stats.mempoolSize,
+                    avgFeeRate: avgFeeRate
+                )
+            }
+            
+            return stats
+        } catch {
+            print("Error fetching mempool stats: \(error)")
+            throw error
+        }
+    }
+    
+    // Update fetchRecentBlocks to use caching
+    func fetchRecentBlocksWithCache(limit: Int = 10) async throws -> [Block] {
+        let endpoint = "/v1/blocks"
+        
+        do {
+            let data = try await fetchDataWithCache(from: endpoint)
+            
+            let decoder = JSONDecoder()
+            let blocks = try decoder.decode([Block].self, from: data)
+            print("Successfully decoded \(blocks.count) blocks")
+            
+            // If we have a latest block and notifications are enabled, send notification
+            if let latestBlock = blocks.first, NotificationsManager.shared.areNotificationsEnabled {
+                // Store the last notified block height
+                let lastNotifiedHeight = UserDefaults.standard.integer(forKey: "lastNotifiedBlockHeight")
+                
+                // Only notify if this is a new block
+                if latestBlock.height > lastNotifiedHeight {
+                    NotificationsManager.shared.notifyNewBlock(height: latestBlock.height)
+                    
+                    // Update the last notified height
+                    UserDefaults.standard.set(latestBlock.height, forKey: "lastNotifiedBlockHeight")
+                }
+            }
+            
+            return blocks
+        } catch {
+            print("Error fetching blocks: \(error)")
+            throw error
+        }
+    }
+    
+    // Update fetchRecommendedFees to use caching
+    func fetchRecommendedFeesWithCache() async throws -> [String: Double] {
+        let endpoint = "/v1/fees/recommended"
+        
+        do {
+            let data = try await fetchDataWithCache(from: endpoint)
+            
+            let fees = try JSONDecoder().decode([String: Double].self, from: data)
+            print("Successfully decoded fees: \(fees)")
+            
+            // Check if we should notify about significant fee changes
+            if NotificationsManager.shared.areNotificationsEnabled {
+                if let fastestFee = fees["fastestFee"] {
+                    // Get the previously recorded fee rate
+                    let previousFee = UserDefaults.standard.double(forKey: "previousFastestFee")
+                    
+                    // Calculate percent change
+                    if previousFee > 0 {
+                        let percentChange = ((fastestFee - previousFee) / previousFee) * 100
+                        
+                        // Only notify on significant changes (e.g., > 20%)
+                        if abs(percentChange) > 20 {
+                            NotificationsManager.shared.notifyFeeRateChange(
+                                newRate: fastestFee,
+                                changePercentage: percentChange
+                            )
+                        }
+                    }
+                    
+                    // Store the current fee for future comparison
+                    UserDefaults.standard.set(fastestFee, forKey: "previousFastestFee")
+                }
+            }
+            
+            return fees
+        } catch {
+            print("Error fetching fees: \(error)")
+            throw error
         }
     }
     

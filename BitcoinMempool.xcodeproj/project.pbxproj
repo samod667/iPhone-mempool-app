@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2CC13D2E2D7E09330064C3A9 /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC13D2D2D7E09330064C3A9 /* CacheManager.swift */; };
+		2CC13D312D7E09630064C3A9 /* RefreshManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC13D302D7E09630064C3A9 /* RefreshManager.swift */; };
+		2CC13D332D7E097C0064C3A9 /* NotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC13D322D7E097C0064C3A9 /* NotificationsManager.swift */; };
 		2CD339AA2D78EDFE00B28722 /* TabState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD339A92D78EDFE00B28722 /* TabState.swift */; };
 		2CD339AC2D7909B200B28722 /* AddressModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD339AB2D7909B200B28722 /* AddressModels.swift */; };
 		2CF709AE2D7788E8003A7D10 /* BitcoinMempoolApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF709AD2D7788E8003A7D10 /* BitcoinMempoolApp.swift */; };
@@ -48,6 +51,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2CC13D2D2D7E09330064C3A9 /* CacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
+		2CC13D302D7E09630064C3A9 /* RefreshManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshManager.swift; sourceTree = "<group>"; };
+		2CC13D322D7E097C0064C3A9 /* NotificationsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsManager.swift; sourceTree = "<group>"; };
 		2CD339A92D78EDFE00B28722 /* TabState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabState.swift; sourceTree = "<group>"; };
 		2CD339AB2D7909B200B28722 /* AddressModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressModels.swift; sourceTree = "<group>"; };
 		2CF709AA2D7788E8003A7D10 /* BitcoinMempool.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BitcoinMempool.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -100,6 +106,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2CC13D2C2D7E09130064C3A9 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				2CC13D2D2D7E09330064C3A9 /* CacheManager.swift */,
+				2CC13D302D7E09630064C3A9 /* RefreshManager.swift */,
+				2CC13D322D7E097C0064C3A9 /* NotificationsManager.swift */,
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
 		2CF709A12D7788E8003A7D10 = {
 			isa = PBXGroup;
 			children = (
@@ -123,6 +139,7 @@
 		2CF709AC2D7788E8003A7D10 /* BitcoinMempool */ = {
 			isa = PBXGroup;
 			children = (
+				2CC13D2C2D7E09130064C3A9 /* Managers */,
 				2CF709F02D779745003A7D10 /* Info.plist */,
 				2CF709DB2D778ADA003A7D10 /* Services */,
 				2CF709DA2D778ACF003A7D10 /* Models */,
@@ -344,11 +361,14 @@
 				2CF709E52D778B61003A7D10 /* StatCard.swift in Sources */,
 				2CF709E92D778B79003A7D10 /* BlockchainInfo.swift in Sources */,
 				2CD339AA2D78EDFE00B28722 /* TabState.swift in Sources */,
+				2CC13D2E2D7E09330064C3A9 /* CacheManager.swift in Sources */,
 				2CF709DF2D778B26003A7D10 /* SearchView.swift in Sources */,
 				2CF709B02D7788E8003A7D10 /* ContentView.swift in Sources */,
 				2CF709EB2D778B84003A7D10 /* Transaction.swift in Sources */,
 				2CF709DD2D778B15003A7D10 /* DashboardView.swift in Sources */,
 				2CF709E32D778B4E003A7D10 /* SettingsView.swift in Sources */,
+				2CC13D332D7E097C0064C3A9 /* NotificationsManager.swift in Sources */,
+				2CC13D312D7E09630064C3A9 /* RefreshManager.swift in Sources */,
 				2CD339AC2D7909B200B28722 /* AddressModels.swift in Sources */,
 				2CF709E72D778B6D003A7D10 /* MempoolStats.swift in Sources */,
 				2CF709F42D7839FD003A7D10 /* MempoolVisualization.swift in Sources */,
@@ -522,6 +542,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"BitcoinMempool/Preview Content\"";
+				DEVELOPMENT_TEAM = A7M53CJXD3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BitcoinMempool/Info.plist;
@@ -535,7 +556,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = nan.BitcoinMempool;
+				PRODUCT_BUNDLE_IDENTIFIER = com.DorSam.BitcoinMempool;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -553,6 +574,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"BitcoinMempool/Preview Content\"";
+				DEVELOPMENT_TEAM = A7M53CJXD3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BitcoinMempool/Info.plist;
@@ -566,7 +588,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = nan.BitcoinMempool;
+				PRODUCT_BUNDLE_IDENTIFIER = com.DorSam.BitcoinMempool;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
