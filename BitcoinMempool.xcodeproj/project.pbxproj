@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2CD339AA2D78EDFE00B28722 /* TabState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD339A92D78EDFE00B28722 /* TabState.swift */; };
+		2CD339AC2D7909B200B28722 /* AddressModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD339AB2D7909B200B28722 /* AddressModels.swift */; };
 		2CF709AE2D7788E8003A7D10 /* BitcoinMempoolApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF709AD2D7788E8003A7D10 /* BitcoinMempoolApp.swift */; };
 		2CF709B02D7788E8003A7D10 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF709AF2D7788E8003A7D10 /* ContentView.swift */; };
 		2CF709B22D7788E9003A7D10 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2CF709B12D7788E9003A7D10 /* Assets.xcassets */; };
@@ -14,6 +16,18 @@
 		2CF709BF2D7788E9003A7D10 /* BitcoinMempoolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF709BE2D7788E9003A7D10 /* BitcoinMempoolTests.swift */; };
 		2CF709C92D7788E9003A7D10 /* BitcoinMempoolUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF709C82D7788E9003A7D10 /* BitcoinMempoolUITests.swift */; };
 		2CF709CB2D7788E9003A7D10 /* BitcoinMempoolUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF709CA2D7788E9003A7D10 /* BitcoinMempoolUITestsLaunchTests.swift */; };
+		2CF709DD2D778B15003A7D10 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF709DC2D778B15003A7D10 /* DashboardView.swift */; };
+		2CF709DF2D778B26003A7D10 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF709DE2D778B26003A7D10 /* SearchView.swift */; };
+		2CF709E12D778B3D003A7D10 /* BlocksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF709E02D778B3D003A7D10 /* BlocksView.swift */; };
+		2CF709E32D778B4E003A7D10 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF709E22D778B4E003A7D10 /* SettingsView.swift */; };
+		2CF709E52D778B61003A7D10 /* StatCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF709E42D778B61003A7D10 /* StatCard.swift */; };
+		2CF709E72D778B6D003A7D10 /* MempoolStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF709E62D778B6D003A7D10 /* MempoolStats.swift */; };
+		2CF709E92D778B79003A7D10 /* BlockchainInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF709E82D778B79003A7D10 /* BlockchainInfo.swift */; };
+		2CF709EB2D778B84003A7D10 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF709EA2D778B84003A7D10 /* Transaction.swift */; };
+		2CF709ED2D778B90003A7D10 /* MempoolAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF709EC2D778B90003A7D10 /* MempoolAPIClient.swift */; };
+		2CF709F22D779863003A7D10 /* ColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF709F12D779863003A7D10 /* ColorExtension.swift */; };
+		2CF709F42D7839FD003A7D10 /* MempoolVisualization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF709F32D7839FD003A7D10 /* MempoolVisualization.swift */; };
+		2CF709F82D7847C8003A7D10 /* BlockDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF709F72D7847C8003A7D10 /* BlockDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,6 +48,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2CD339A92D78EDFE00B28722 /* TabState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabState.swift; sourceTree = "<group>"; };
+		2CD339AB2D7909B200B28722 /* AddressModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressModels.swift; sourceTree = "<group>"; };
 		2CF709AA2D7788E8003A7D10 /* BitcoinMempool.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BitcoinMempool.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CF709AD2D7788E8003A7D10 /* BitcoinMempoolApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinMempoolApp.swift; sourceTree = "<group>"; };
 		2CF709AF2D7788E8003A7D10 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -44,6 +60,19 @@
 		2CF709C42D7788E9003A7D10 /* BitcoinMempoolUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BitcoinMempoolUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CF709C82D7788E9003A7D10 /* BitcoinMempoolUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinMempoolUITests.swift; sourceTree = "<group>"; };
 		2CF709CA2D7788E9003A7D10 /* BitcoinMempoolUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinMempoolUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		2CF709DC2D778B15003A7D10 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		2CF709DE2D778B26003A7D10 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
+		2CF709E02D778B3D003A7D10 /* BlocksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlocksView.swift; sourceTree = "<group>"; };
+		2CF709E22D778B4E003A7D10 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		2CF709E42D778B61003A7D10 /* StatCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatCard.swift; sourceTree = "<group>"; };
+		2CF709E62D778B6D003A7D10 /* MempoolStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MempoolStats.swift; sourceTree = "<group>"; };
+		2CF709E82D778B79003A7D10 /* BlockchainInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainInfo.swift; sourceTree = "<group>"; };
+		2CF709EA2D778B84003A7D10 /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
+		2CF709EC2D778B90003A7D10 /* MempoolAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MempoolAPIClient.swift; sourceTree = "<group>"; };
+		2CF709F02D779745003A7D10 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		2CF709F12D779863003A7D10 /* ColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtension.swift; sourceTree = "<group>"; };
+		2CF709F32D7839FD003A7D10 /* MempoolVisualization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MempoolVisualization.swift; sourceTree = "<group>"; };
+		2CF709F72D7847C8003A7D10 /* BlockDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,8 +123,12 @@
 		2CF709AC2D7788E8003A7D10 /* BitcoinMempool */ = {
 			isa = PBXGroup;
 			children = (
-				2CF709AD2D7788E8003A7D10 /* BitcoinMempoolApp.swift */,
-				2CF709AF2D7788E8003A7D10 /* ContentView.swift */,
+				2CF709F02D779745003A7D10 /* Info.plist */,
+				2CF709DB2D778ADA003A7D10 /* Services */,
+				2CF709DA2D778ACF003A7D10 /* Models */,
+				2CF709D92D778AC2003A7D10 /* Comoponents */,
+				2CF709D82D778ABA003A7D10 /* Views */,
+				2CF709D72D778AAF003A7D10 /* App */,
 				2CF709B12D7788E9003A7D10 /* Assets.xcassets */,
 				2CF709B32D7788E9003A7D10 /* Preview Content */,
 			);
@@ -125,6 +158,57 @@
 				2CF709CA2D7788E9003A7D10 /* BitcoinMempoolUITestsLaunchTests.swift */,
 			);
 			path = BitcoinMempoolUITests;
+			sourceTree = "<group>";
+		};
+		2CF709D72D778AAF003A7D10 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				2CF709AD2D7788E8003A7D10 /* BitcoinMempoolApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		2CF709D82D778ABA003A7D10 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				2CF709AF2D7788E8003A7D10 /* ContentView.swift */,
+				2CF709DC2D778B15003A7D10 /* DashboardView.swift */,
+				2CF709DE2D778B26003A7D10 /* SearchView.swift */,
+				2CF709E02D778B3D003A7D10 /* BlocksView.swift */,
+				2CF709E22D778B4E003A7D10 /* SettingsView.swift */,
+				2CF709F12D779863003A7D10 /* ColorExtension.swift */,
+				2CF709F32D7839FD003A7D10 /* MempoolVisualization.swift */,
+				2CF709F72D7847C8003A7D10 /* BlockDetailView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		2CF709D92D778AC2003A7D10 /* Comoponents */ = {
+			isa = PBXGroup;
+			children = (
+				2CF709E42D778B61003A7D10 /* StatCard.swift */,
+			);
+			path = Comoponents;
+			sourceTree = "<group>";
+		};
+		2CF709DA2D778ACF003A7D10 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				2CF709E62D778B6D003A7D10 /* MempoolStats.swift */,
+				2CF709E82D778B79003A7D10 /* BlockchainInfo.swift */,
+				2CF709EA2D778B84003A7D10 /* Transaction.swift */,
+				2CD339A92D78EDFE00B28722 /* TabState.swift */,
+				2CD339AB2D7909B200B28722 /* AddressModels.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		2CF709DB2D778ADA003A7D10 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				2CF709EC2D778B90003A7D10 /* MempoolAPIClient.swift */,
+			);
+			path = Services;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -257,8 +341,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2CF709E52D778B61003A7D10 /* StatCard.swift in Sources */,
+				2CF709E92D778B79003A7D10 /* BlockchainInfo.swift in Sources */,
+				2CD339AA2D78EDFE00B28722 /* TabState.swift in Sources */,
+				2CF709DF2D778B26003A7D10 /* SearchView.swift in Sources */,
 				2CF709B02D7788E8003A7D10 /* ContentView.swift in Sources */,
+				2CF709EB2D778B84003A7D10 /* Transaction.swift in Sources */,
+				2CF709DD2D778B15003A7D10 /* DashboardView.swift in Sources */,
+				2CF709E32D778B4E003A7D10 /* SettingsView.swift in Sources */,
+				2CD339AC2D7909B200B28722 /* AddressModels.swift in Sources */,
+				2CF709E72D778B6D003A7D10 /* MempoolStats.swift in Sources */,
+				2CF709F42D7839FD003A7D10 /* MempoolVisualization.swift in Sources */,
+				2CF709E12D778B3D003A7D10 /* BlocksView.swift in Sources */,
 				2CF709AE2D7788E8003A7D10 /* BitcoinMempoolApp.swift in Sources */,
+				2CF709F82D7847C8003A7D10 /* BlockDetailView.swift in Sources */,
+				2CF709ED2D778B90003A7D10 /* MempoolAPIClient.swift in Sources */,
+				2CF709F22D779863003A7D10 /* ColorExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -418,12 +516,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=iphoneos*]" = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"BitcoinMempool/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BitcoinMempool/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -446,12 +547,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=iphoneos*]" = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"BitcoinMempool/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BitcoinMempool/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
