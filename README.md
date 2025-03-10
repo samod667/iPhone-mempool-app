@@ -3,10 +3,10 @@
 A comprehensive iOS application for monitoring Bitcoin network activity in real-time. This app brings the functionality of mempool.space to your iPhone, allowing you to explore the Bitcoin mempool, track transactions, analyze blocks, and monitor network fees on the go.
 
 <p align="center">
-    <img src="docs/img/dashboard.png" width="30%" alt="Dashboard">
-    <img src="docs/img/address.png" width="30%" alt="Address">
-    <img src="docs/img/block.png" width="30%" alt="Blocks">
-    <img src="docs/img/block2.png" width="30%" alt="Blocks">
+    <img src="Docs/img/dashboard.png" width="30%" alt="Dashboard">
+    <img src="Docs/img/address.png" width="30%" alt="Address">
+    <img src="Docs/img/block.png" width="30%" alt="Blocks">
+    <img src="Docs/img/block2.png" width="30%" alt="Blocks">
     </p>
 
 ## Features
