@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2C96B2B62D7E2DDF0098BBAD /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 2C96B2B52D7E2DDF0098BBAD /* README.md */; };
 		2CC13D2E2D7E09330064C3A9 /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC13D2D2D7E09330064C3A9 /* CacheManager.swift */; };
 		2CC13D312D7E09630064C3A9 /* RefreshManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC13D302D7E09630064C3A9 /* RefreshManager.swift */; };
 		2CC13D332D7E097C0064C3A9 /* NotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC13D322D7E097C0064C3A9 /* NotificationsManager.swift */; };
@@ -51,6 +52,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2C96B2B52D7E2DDF0098BBAD /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		2CC13D2D2D7E09330064C3A9 /* CacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
 		2CC13D302D7E09630064C3A9 /* RefreshManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshManager.swift; sourceTree = "<group>"; };
 		2CC13D322D7E097C0064C3A9 /* NotificationsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsManager.swift; sourceTree = "<group>"; };
@@ -106,6 +108,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2CBF67282D7EE7F4007A368B /* Docs */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Docs;
+			sourceTree = "<group>";
+		};
 		2CC13D2C2D7E09130064C3A9 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
@@ -119,6 +128,8 @@
 		2CF709A12D7788E8003A7D10 = {
 			isa = PBXGroup;
 			children = (
+				2CBF67282D7EE7F4007A368B /* Docs */,
+				2C96B2B52D7E2DDF0098BBAD /* README.md */,
 				2CF709AC2D7788E8003A7D10 /* BitcoinMempool */,
 				2CF709BD2D7788E9003A7D10 /* BitcoinMempoolTests */,
 				2CF709C72D7788E9003A7D10 /* BitcoinMempoolUITests */,
@@ -332,6 +343,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2C96B2B62D7E2DDF0098BBAD /* README.md in Resources */,
 				2CF709B52D7788E9003A7D10 /* Preview Assets.xcassets in Resources */,
 				2CF709B22D7788E9003A7D10 /* Assets.xcassets in Resources */,
 			);
