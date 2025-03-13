@@ -2,15 +2,19 @@
 //  BlockchainInfo.swift
 //  BitcoinMempool
 //
-//  Created by Dor Sam on 04/03/2025.
+//  Created by Dor Sam on 09/03/2025.
 //
 
 import SwiftUI
 import Foundation
 
+/// Basic information about the Bitcoin blockchain
 struct BlockchainInfo: Codable {
+    /// Current block height
     let height: Int
+    /// Current mining difficulty
     let difficulty: Double
+    /// Hash of the latest block
     let bestBlockHash: String
     
     enum CodingKeys: String, CodingKey {
@@ -20,24 +24,39 @@ struct BlockchainInfo: Codable {
     }
 }
 
+/// Detailed information about a Bitcoin block
 struct Block: Codable, Identifiable {
+    /// Block hash (unique identifier)
     let id: String
+    /// Block height
     let height: Int
+    /// Block version
     let version: Int
+    /// Block timestamp
     let timestamp: Int
+    /// Number of transactions in the block
     let txCount: Int
+    /// Block size in bytes
     let size: Int
+    /// Block weight in weight units
     let weight: Int
+    /// Merkle root hash of the block transactions
     let merkleRoot: String
+    /// Hash of the previous block
     let previousBlockHash: String?
+    /// Mining difficulty when the block was mined
     let difficulty: Double
+    /// Nonce value used in mining
     let nonce: Int
+    /// Block bits (compact form of target)
     let bits: Int
+    /// Median timestamp of recent blocks
     let mediantime: Int
     
-    // Default value for median fee since it's not in the API
+    /// Median fee rate - not provided by API, used for UI consistency
     var medianFee: Double { return 0.0 }
-    // Default value for fee range since it's not in the API
+    
+    /// Fee range - not provided by API, used for UI consistency
     var feeRange: [Double] { return [] }
     
     enum CodingKeys: String, CodingKey {
@@ -57,19 +76,27 @@ struct Block: Codable, Identifiable {
     }
 }
 
+/// Represents a block waiting to be mined (in mempool)
 struct PendingBlock: Identifiable {
+    /// Unique identifier for SwiftUI
     let id = UUID()
-    let blockFeeRate: Double      // Average fee rate for the block (~1 sat/vB, ~2 sat/vB)
-    let feeRange: (Double, Double) // Min-Max fee range (e.g., 1-1 sat/vB or 1-800 sat/vB)
-    let totalBTC: Double          // Total BTC value (e.g., 0.01 BTC, 0.043 BTC)
-    let txCount: Int              // Number of transactions (e.g., 52, 3335)
-    let minutesUntilMining: Int   // Estimated time until mining (e.g., 69, 9)
+    /// Average fee rate for the block in sat/vB
+    let blockFeeRate: Double
+    /// Minimum and maximum fee range (min, max) in sat/vB
+    let feeRange: (Double, Double)
+    /// Total BTC value in the block
+    let totalBTC: Double
+    /// Number of transactions in the block
+    let txCount: Int
+    /// Estimated minutes until the block is mined
+    let minutesUntilMining: Int
     
-    // Calculated properties for display
+    /// Formatted fee rate string for display
     var formattedFeeRate: String {
         return String(format: "~%.0f sat/vB", blockFeeRate)
     }
     
+    /// Formatted fee range string for display
     var formattedFeeRange: String {
         if feeRange.0 == feeRange.1 {
             return "\(Int(feeRange.0)) sat/vB"
@@ -78,10 +105,12 @@ struct PendingBlock: Identifiable {
         }
     }
     
+    /// Formatted BTC amount for display
     var formattedBTC: String {
         return String(format: "%.3f BTC", totalBTC)
     }
     
+    /// Color representing fee level for UI
     var color: Color {
         if blockFeeRate >= 8 {
             return Color.highFee.opacity(0.9)
@@ -93,17 +122,22 @@ struct PendingBlock: Identifiable {
     }
 }
 
-// BlockchainStateManager - Manages current blockchain state
+/// Manages and tracks current state of the Bitcoin blockchain
 class BlockchainStateManager: ObservableObject {
+    /// Shared singleton instance
     static let shared = BlockchainStateManager()
     
+    /// Current Bitcoin block height
     @Published private(set) var currentBlockHeight: Int = 0
+    
+    /// Last time the block height was updated
     @Published private(set) var lastUpdated: Date?
     
     private let apiClient = MempoolAPIClient.shared
     private var refreshTask: Task<Void, Never>?
     private let refreshInterval: TimeInterval = 120 // 2 minutes
     
+    /// Initialize and start background refresh
     init() {
         startPeriodicRefresh()
     }
@@ -112,7 +146,7 @@ class BlockchainStateManager: ObservableObject {
         refreshTask?.cancel()
     }
     
-    // Start a background task to periodically refresh the block height
+    /// Start a background task to periodically refresh the block height
     func startPeriodicRefresh() {
         refreshTask?.cancel()
         refreshTask = Task { [weak self] in
@@ -123,7 +157,7 @@ class BlockchainStateManager: ObservableObject {
         }
     }
     
-    // Fetch the current block height from the API
+    /// Fetch the current block height from the API
     func refreshBlockHeight() async {
         do {
             let endpoint = "/blocks/tip/height"
@@ -135,18 +169,19 @@ class BlockchainStateManager: ObservableObject {
                     self.currentBlockHeight = height
                     self.lastUpdated = Date()
                 }
-                print("Updated current block height: \(height)")
             }
         } catch {
             print("Failed to refresh block height: \(error)")
         }
     }
     
-    // Calculate confirmations for a transaction
+    /// Calculate confirmations for a transaction based on its block height
+    /// - Parameter blockHeight: The height of the block containing the transaction
+    /// - Returns: Number of confirmations, or nil if invalid height
     func getConfirmations(forBlockHeight blockHeight: Int?) -> Int? {
         guard let blockHeight = blockHeight,
               currentBlockHeight > 0,
-              blockHeight <= currentBlockHeight 
+              blockHeight <= currentBlockHeight
         else {
             return nil
         }

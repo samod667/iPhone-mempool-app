@@ -17,7 +17,7 @@ struct ContentView: View {
         TabView(selection: $tabState.selectedTab) {
             // Dashboard Tab
             NavigationView {
-                DashboardView()  // <- Change here: use DashboardView directly, not DashboardViewModel.DashboardView()
+                DashboardView()  
             }
             .tabItem {
                 Label("Dashboard", systemImage: "chart.bar.fill")

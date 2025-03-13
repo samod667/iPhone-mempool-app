@@ -2,17 +2,23 @@
 //  TabState.swift
 //  BitcoinMempool
 //
-//  Created by Dor Sam on 05/03/2025.
+//  Created by Dor Sam on 09/03/2025.
 //
 
 import Foundation
 import SwiftUI
 
-// A class to hold the app's tab selection state
+/// Manages the selected tab state for the app's tab bar interface
 class TabState: ObservableObject {
+    /// Currently selected tab index:
+    /// - 0: Dashboard
+    /// - 1: Search
+    /// - 2: Blocks
+    /// - 3: Settings
     @Published var selectedTab: Int = 0
     
+    /// Programmatically switch to the Blocks tab
     func switchToBlocksTab() {
-        selectedTab = 2 // Index 2 corresponds to the Blocks tab
+        selectedTab = 2
     }
 }

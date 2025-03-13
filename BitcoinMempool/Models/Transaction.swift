@@ -2,47 +2,68 @@
 //  Transaction.swift
 //  BitcoinMempool
 //
-//  Created by Dor Sam on 04/03/2025.
+//  Created by Dor Sam on 09/03/2025.
 //
 
 import Foundation
 
+/// Represents a Bitcoin transaction with all its details
 struct Transaction: Codable, Identifiable {
+    /// Transaction ID (txid)
     let id: String
+    
+    /// Transaction fee in BTC
     let fee: Double
+    
+    /// Virtual size in vBytes
     let vsize: Int
+    
+    /// Transaction value in satoshis
     let value: Int
+    
+    /// Size in bytes
     var size: Int
+    
+    /// Weight units (optional)
     var weight: Int?
+    
+    /// Transaction confirmation status
     var statusObject: TransactionStatus?
+    
+    /// Status string ("Confirmed", "Unconfirmed", "Unknown")
     var status: String?
+    
+    /// Transaction timestamp
     var timestamp: Int?
+    
+    /// Block height where transaction was confirmed
     var blockHeight: Int?
+    
+    /// Transaction inputs
     var vin: [TransactionInput]?
+    
+    /// Transaction outputs
     var vout: [TransactionOutput]?
     
-    // Calculate fee rate in sat/vB with safeguards
+    /// Calculate fee rate in sat/vB with safeguards
     var feeRate: Double {
-        // Avoid division by zero and handle historical transactions
         guard vsize > 0 else { return 0.0 }
         
-        // Fee is stored in BTC, convert to satoshis before calculating rate
         let feeInSatoshis = fee * 100_000_000
         return feeInSatoshis / Double(vsize)
     }
     
-    // Format fee for display, detecting abnormally large values
+    /// Format fee for display, detecting abnormally large values
     var formattedFee: String {
-        // If fee is suspiciously large (more than 1 BTC), it's likely in satoshis already
         if fee > 1.0 {
-            // Convert from satoshis to BTC for display
+            // Likely in satoshis already, convert to BTC
             return String(format: "%.8f BTC", fee / 100_000_000)
         } else {
             return String(format: "%.8f BTC", fee)
         }
     }
     
-    // Display weight with validation
+    /// Display weight with validation
     var formattedWeight: String {
         guard let w = weight, w > 0 else {
             return "N/A" // For pre-SegWit transactions
@@ -50,7 +71,7 @@ struct Transaction: Codable, Identifiable {
         return "\(w) WU"
     }
     
-    // Display vsize with validation
+    /// Display vsize with validation
     var formattedVSize: String {
         if vsize > 0 {
             return "\(vsize) vB"
@@ -72,6 +93,7 @@ struct Transaction: Codable, Identifiable {
         case vout
     }
     
+    /// Create a simple transaction with minimal information
     init(id: String, fee: Double, vsize: Int, value: Int) {
         self.id = id
         self.fee = fee
@@ -87,31 +109,31 @@ struct Transaction: Codable, Identifiable {
         self.vout = nil
     }
     
+    /// Decode transaction from JSON, handling potential data inconsistencies
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        // Get the ID right away
+        // Required field
         id = try container.decode(String.self, forKey: .id)
         
-        // Create temporary variables for properties we need to modify
+        // Handle potentially inconsistent data
         var tempVsize = try container.decodeIfPresent(Int.self, forKey: .vsize) ?? 0
         var tempFee = try container.decodeIfPresent(Double.self, forKey: .fee) ?? 0.0
         
-        // Handle other optional values
+        // Optional fields with sensible defaults
         value = try container.decodeIfPresent(Int.self, forKey: .value) ?? 0
         size = try container.decodeIfPresent(Int.self, forKey: .size) ?? tempVsize
         weight = try container.decodeIfPresent(Int.self, forKey: .weight)
         timestamp = try container.decodeIfPresent(Int.self, forKey: .timestamp)
         
-        // Parse status object
+        // Handle status object
         statusObject = try container.decodeIfPresent(TransactionStatus.self, forKey: .statusObject)
         
-        // Set status string and blockHeight based on statusObject
         if let statusObj = statusObject {
             status = statusObj.confirmed ? "Confirmed" : "Unconfirmed"
             blockHeight = statusObj.block_height
             
-            // If timestamp is not set but block_time is available in status, use that
+            // Use block_time if timestamp is missing
             if timestamp == nil {
                 timestamp = statusObj.block_time
             }
@@ -120,50 +142,60 @@ struct Transaction: Codable, Identifiable {
             blockHeight = nil
         }
         
-        // Parse input and output data
+        // Transaction inputs and outputs
         vin = try container.decodeIfPresent([TransactionInput].self, forKey: .vin)
         vout = try container.decodeIfPresent([TransactionOutput].self, forKey: .vout)
         
         // Handle historical transactions (pre-SegWit)
         if weight == nil || weight == 0 {
-            // For historical transactions, weight is size * 4
             weight = size > 0 ? size * 4 : nil
         }
         
-        // Fix vsize for historical transactions
         if tempVsize == 0 && size > 0 {
-            // For historical transactions, vsize is approximately size
             tempVsize = size
         }
         
-        // Fix fee value for historical transactions
-        // If fee seems very high, it's likely in satoshis already
+        // Normalize fee value (some APIs return in satoshis, some in BTC)
         if tempFee > 1.0 {
             tempFee = tempFee / 100_000_000 // Convert satoshis to BTC
         }
         
-        // Now set the final values
         vsize = tempVsize
         fee = tempFee
     }
     
-    // Calculate confirmations using BlockchainStateManager
+    /// Calculate confirmations using the current blockchain state
     var confirmations: Int? {
         return BlockchainStateManager.shared.getConfirmations(forBlockHeight: blockHeight)
     }
 }
 
-// MARK: - Transaction Input & Other structs remain the same
-
 // MARK: - Transaction Input
+
+/// Represents an input in a Bitcoin transaction
 struct TransactionInput: Codable {
+    /// Source transaction ID (for non-coinbase)
     let txid: String?
+    
+    /// Source output index (for non-coinbase)
     let vout: Int?
+    
+    /// Previous output details
     let prevout: PrevOutput?
+    
+    /// Script signature
     let scriptsig: String?
+    
+    /// Script signature in assembly format
     let scriptsig_asm: String?
+    
+    /// Witness data for SegWit transactions
     let witness: [String]?
+    
+    /// Whether this is a coinbase input (block reward)
     let is_coinbase: Bool?
+    
+    /// Sequence number
     let sequence: Int?
     
     enum CodingKeys: String, CodingKey {
@@ -179,11 +211,22 @@ struct TransactionInput: Codable {
 }
 
 // MARK: - Previous Output
+
+/// Details about the previous output being spent
 struct PrevOutput: Codable {
+    /// Script public key
     let scriptpubkey: String?
+    
+    /// Script public key in assembly format
     let scriptpubkey_asm: String?
+    
+    /// Script type (e.g., "p2pkh", "p2sh", "p2wpkh")
     let scriptpubkey_type: String?
+    
+    /// Address associated with this output
     let scriptpubkey_address: String?
+    
+    /// Value in satoshis
     let value: Int
     
     enum CodingKeys: String, CodingKey {
@@ -196,11 +239,22 @@ struct PrevOutput: Codable {
 }
 
 // MARK: - Transaction Output
+
+/// Represents an output in a Bitcoin transaction
 struct TransactionOutput: Codable {
+    /// Script public key
     let scriptpubkey: String?
+    
+    /// Script public key in assembly format
     let scriptpubkey_asm: String?
+    
+    /// Script type (e.g., "p2pkh", "p2sh", "p2wpkh")
     let scriptpubkey_type: String?
+    
+    /// Address associated with this output
     let scriptpubkey_address: String?
+    
+    /// Value in satoshis
     let value: Int
     
     enum CodingKeys: String, CodingKey {
@@ -212,9 +266,17 @@ struct TransactionOutput: Codable {
     }
 }
 
+/// Represents the confirmation status of a transaction
 struct TransactionStatus: Codable {
+    /// Whether the transaction is confirmed in a block
     let confirmed: Bool
+    
+    /// Height of the block containing the transaction (if confirmed)
     let block_height: Int?
+    
+    /// Hash of the block containing the transaction (if confirmed)
     let block_hash: String?
+    
+    /// Timestamp of the block containing the transaction (if confirmed)
     let block_time: Int?
 }

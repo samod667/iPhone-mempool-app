@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 import Combine
 
+/// Manages automatic and manual data refreshing throughout the app
 class RefreshManager: ObservableObject {
     static let shared = RefreshManager()
     
@@ -22,20 +23,19 @@ class RefreshManager: ObservableObject {
         return UserDefaults.standard.integer(forKey: "autoRefreshInterval")
     }
     
-    // Check if auto refresh is enabled
+    /// Indicates if auto refresh is enabled in settings
     var isAutoRefreshEnabled: Bool {
         return refreshInterval > 0
     }
     
     init() {
-        // Start timer if interval is set
         setupTimer()
-        
-        // Listen for settings changes
-        NotificationCenter.default.addObserver(self,
-                                              selector: #selector(settingsChanged),
-                                              name: UserDefaults.didChangeNotification,
-                                              object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(settingsChanged),
+            name: UserDefaults.didChangeNotification,
+            object: nil
+        )
     }
     
     deinit {
@@ -43,56 +43,58 @@ class RefreshManager: ObservableObject {
         NotificationCenter.default.removeObserver(self)
     }
     
-    // Setup or update timer based on settings
+    /// Setup or update timer based on user settings
     private func setupTimer() {
-        // Cancel existing timer
         timer?.invalidate()
         timer = nil
         
-        // If auto refresh is disabled, return
-        guard refreshInterval > 0 else {
-            print("Auto refresh disabled")
-            return
-        }
+        guard refreshInterval > 0 else { return }
         
-        print("Setting up refresh timer for \(refreshInterval) seconds")
-        
-        // Create new timer
-        timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(refreshInterval),
-                                    repeats: true) { [weak self] _ in
+        timer = Timer.scheduledTimer(
+            withTimeInterval: TimeInterval(refreshInterval),
+            repeats: true
+        ) { [weak self] _ in
             self?.refreshAll()
         }
     }
     
-    // Settings changed notification handler
+    /// Handle settings changes
     @objc private func settingsChanged() {
         setupTimer()
     }
     
-    // Trigger all refresh publishers
+    /// Trigger refresh for all data types
     func refreshAll() {
-        print("Auto-refreshing data...")
         mempoolRefreshPublisher.send()
         blocksRefreshPublisher.send()
         searchRefreshPublisher.send()
     }
     
-    // Manually trigger refresh for a specific section
+    /// Manually refresh mempool data
     func refreshMempool() {
         mempoolRefreshPublisher.send()
     }
     
+    /// Manually refresh blocks data
     func refreshBlocks() {
         blocksRefreshPublisher.send()
     }
     
+    /// Manually refresh search data
     func refreshSearch() {
         searchRefreshPublisher.send()
     }
 }
 
-// Extension for SwiftUI Views to easily subscribe to refresh events
+// MARK: - SwiftUI Extensions
+
+/// Extension for SwiftUI Views to easily subscribe to refresh events
 extension View {
+    /// Subscribe to auto-refresh events
+    /// - Parameters:
+    ///   - target: The type of data to refresh
+    ///   - action: Callback to execute when refresh is triggered
+    /// - Returns: Modified view with refresh subscription
     func onAutoRefresh(target: RefreshTarget, perform action: @escaping () -> Void) -> some View {
         self.onReceive(target.publisher) { _ in
             action()
@@ -100,7 +102,7 @@ extension View {
     }
 }
 
-// Enum to specify which refresh publisher to use
+/// Enum to specify which refresh publisher to use
 enum RefreshTarget {
     case mempool
     case blocks

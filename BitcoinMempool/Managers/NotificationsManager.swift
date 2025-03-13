@@ -8,26 +8,27 @@ import Foundation
 import UserNotifications
 import SwiftUI
 
+/// Manages local notifications for Bitcoin blockchain events
 class NotificationsManager {
     static let shared = NotificationsManager()
+    private init() {}
     
-    // Check if notifications are enabled in settings
+    /// Check if notifications are enabled in app settings
     var areNotificationsEnabled: Bool {
         return UserDefaults.standard.bool(forKey: "enablePushNotifications")
     }
     
-    // Request notification permissions
+    /// Request system notification permissions
     func requestPermissions() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
-            if granted {
-                print("Notification permissions granted")
-            } else if let error = error {
+            if let error = error {
                 print("Error requesting notification permissions: \(error)")
             }
         }
     }
     
-    // Check current notification settings
+    /// Check current notification authorization status
+    /// - Parameter completion: Callback with boolean indicating if notifications are authorized
     func checkNotificationStatus(completion: @escaping (Bool) -> Void) {
         UNUserNotificationCenter.current().getNotificationSettings { settings in
             let isAuthorized = settings.authorizationStatus == .authorized
@@ -37,48 +38,39 @@ class NotificationsManager {
         }
     }
     
-    // Send a local notification
+    /// Send a local notification
+    /// - Parameters:
+    ///   - title: Notification title
+    ///   - body: Notification body text
+    ///   - timeInterval: Delay before showing notification (default: 1 second)
     func sendNotification(title: String, body: String, timeInterval: TimeInterval = 1) {
-        // First check if notifications are enabled in app settings
-        guard areNotificationsEnabled else {
-            print("Notifications disabled in app settings")
-            return
-        }
+        guard areNotificationsEnabled else { return }
         
-        // Then check if we have system permission
         checkNotificationStatus { isAuthorized in
-            guard isAuthorized else {
-                print("Notifications not authorized by system")
-                return
-            }
+            guard isAuthorized else { return }
             
             let content = UNMutableNotificationContent()
             content.title = title
             content.body = body
             content.sound = UNNotificationSound.default
             
-            // Create a time-based trigger
             let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
-            
-            // Create a request
             let request = UNNotificationRequest(
                 identifier: UUID().uuidString,
                 content: content,
                 trigger: trigger
             )
             
-            // Add the request to the notification center
             UNUserNotificationCenter.current().add(request) { error in
                 if let error = error {
                     print("Error scheduling notification: \(error)")
-                } else {
-                    print("Notification scheduled successfully")
                 }
             }
         }
     }
     
-    // Send a notification for new blocks
+    /// Notify user about a new block being mined
+    /// - Parameter height: Block height
     func notifyNewBlock(height: Int) {
         sendNotification(
             title: "New Bitcoin Block",
@@ -86,7 +78,10 @@ class NotificationsManager {
         )
     }
     
-    // Send a notification for mempool congestion
+    /// Notify user about mempool congestion
+    /// - Parameters:
+    ///   - txCount: Number of transactions in mempool
+    ///   - avgFeeRate: Average fee rate in sat/vB
     func notifyMempoolCongestion(txCount: Int, avgFeeRate: Double) {
         sendNotification(
             title: "Mempool Congestion Alert",
@@ -94,7 +89,10 @@ class NotificationsManager {
         )
     }
     
-    // Send a notification for fee rate changes
+    /// Notify user about fee rate changes
+    /// - Parameters:
+    ///   - newRate: Current fee rate in sat/vB
+    ///   - changePercentage: Percentage change from previous rate
     func notifyFeeRateChange(newRate: Double, changePercentage: Double) {
         let direction = changePercentage >= 0 ? "increased" : "decreased"
         let absPercentage = abs(changePercentage)
